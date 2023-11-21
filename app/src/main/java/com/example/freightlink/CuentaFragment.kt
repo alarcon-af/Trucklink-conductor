@@ -53,7 +53,7 @@ class CuentaFragment : Fragment() {
             override fun onDataChange(dataSnapshot: DataSnapshot){
                 val user = dataSnapshot.getValue(Driver::class.java)
                 if(user!=null){
-                    nombre.text = user.nombre
+                    nombre.text = "${user.nombre} ${user.apellido}"
                     correo.text = user.correo
                     cedula.text = user.cedula.toString()
                     telefono.text = user.telefono.toString()
