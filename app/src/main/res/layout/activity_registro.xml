@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <TextView
+        android:id="@+id/titulo"
+        android:layout_width="163dp"
+        android:layout_height="67dp"
+        android:text="¡Registrate!"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.04" />
+
+    <ImageView
+        android:id="@+id/profilePicReg"
+        android:layout_width="117dp"
+        android:layout_height="106dp"
+        android:src="@raw/avatar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.187"
+        />
+
+    <Button
+        android:id="@+id/cambiarFoto"
+        android:layout_width="118dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="148dp"
+        android:backgroundTint="@color/dark_green"
+        android:text="Cambiar foto"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profilePicReg"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <Button
+        android:id="@+id/volver"
+        android:layout_width="96dp"
+        android:layout_height="43dp"
+        android:layout_marginEnd="308dp"
+        android:backgroundTint="@color/dark_green"
+        android:text="Volver"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.004" />
+
+    <Button
+        android:id="@+id/registrar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="140dp"
+        android:backgroundTint="@color/dark_green"
+        android:text="¡Registrar!"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profilePicReg"
+        app:layout_constraintVertical_bias="0.704" />
+
+    <EditText
+        android:id="@+id/CorreoReg"
+        android:layout_width="181dp"
+        android:layout_height="41dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginRight="204dp"
+        android:hint="Correo"
+        android:inputType="text"
+        android:textColor="@color/black"
+        android:textColorHint="#808080"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.424" />
+
+    <EditText
+        android:id="@+id/ContrasenaReg"
+        android:layout_width="183dp"
+        android:layout_height="42dp"
+        android:layout_marginStart="208dp"
+        android:layout_marginRight="204dp"
+        android:hint="Contraseña"
+        android:inputType="text"
+        android:textColor="@color/black"
+        android:textColorHint="#808080"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.425" />
+
+    <EditText
+        android:id="@+id/NombreReg"
+        android:layout_width="183dp"
+        android:layout_height="42dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginRight="204dp"
+        android:hint="Nombre"
+        android:inputType="text"
+        android:textColor="@color/black"
+        android:textColorHint="#808080"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.547" />
+
+    <EditText
+        android:id="@+id/ApellidoReg"
+        android:layout_width="183dp"
+        android:layout_height="42dp"
+        android:layout_marginStart="208dp"
+        android:layout_marginRight="204dp"
+        android:hint="Apellido"
+        android:inputType="text"
+        android:textColor="@color/black"
+        android:textColorHint="#808080"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.547" />
+
+    <EditText
+        android:id="@+id/TelefonoReg"
+        android:layout_width="183dp"
+        android:layout_height="42dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginRight="204dp"
+        android:hint="Telefono"
+        android:inputType="number"
+        android:textColor="@color/black"
+        android:textColorHint="#808080"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.68" />
+
+    <EditText
+        android:id="@+id/CedulaReg"
+        android:layout_width="183dp"
+        android:layout_height="42dp"
+        android:layout_marginStart="208dp"
+        android:layout_marginRight="204dp"
+        android:hint="Cedula"
+        android:inputType="number"
+        android:textColor="@color/black"
+        android:textColorHint="#808080"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.68" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

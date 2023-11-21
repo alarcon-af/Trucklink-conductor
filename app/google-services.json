@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "961801249505",
+    "project_id": "trucklink-4e738",
+    "storage_bucket": "trucklink-4e738.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:961801249505:android:bd2ffd11b197738fb08da0",
+        "android_client_info": {
+          "package_name": "com.example.freightlink"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD14kvSkxGHQITTUKPIqWKYTpOX8K6UYzI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
