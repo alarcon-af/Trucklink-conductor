@@ -9,5 +9,5 @@ data class User (
     var nombre: String = "",
     var apellido: String = "",
     var telefono: Long = 0,
-    var foto: Uri? = null
+    var foto: String? = null
 )

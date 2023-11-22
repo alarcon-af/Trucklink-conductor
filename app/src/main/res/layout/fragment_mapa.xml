@@ -1,8 +1,142 @@
 <?xml version="1.0" encoding="utf-8"?>
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/map"
-    android:name="com.google.android.gms.maps.SupportMapFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MapaFragment" />
+    android:background="@color/black"
+    xmlns:map="http://schemas.android.com/apk/res-auto"
+    tools:context=".MapaFragment">
+
+    <fragment
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="500dp"
+        map:layout_constraintEnd_toEndOf="parent"
+        map:layout_constraintStart_toStartOf="parent"
+        map:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/recta2"
+        android:layout_width="454dp"
+        android:layout_height="294dp"
+        android:layout_gravity="top|center"
+        android:layout_marginStart="4dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/recta_menu"
+        map:layout_constraintStart_toStartOf="parent"
+        map:layout_constraintTop_toBottomOf="@+id/map" />
+
+    <ImageView
+        android:id="@+id/fotoCliente"
+        android:layout_width="80dp"
+        android:layout_height="85dp"
+        android:layout_marginStart="44dp"
+        android:layout_marginTop="32dp"
+        map:layout_constraintStart_toStartOf="parent"
+        map:layout_constraintTop_toBottomOf="@+id/map"
+        tools:src="@tools:sample/avatars" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="116dp"
+        android:text="Carga"
+        map:layout_constraintStart_toEndOf="@+id/sigDir"
+        map:layout_constraintTop_toBottomOf="@+id/map" />
+
+    <TextView
+        android:id="@+id/cargaPedido"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="116dp"
+        android:layout_marginEnd="124dp"
+        android:text="TextView"
+        map:layout_constraintEnd_toEndOf="parent"
+        map:layout_constraintTop_toBottomOf="@+id/map" />
+
+    <TextView
+        android:id="@+id/nombreCliente"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="128dp"
+        android:text="TextView"
+        map:layout_constraintBottom_toBottomOf="parent"
+        map:layout_constraintEnd_toEndOf="parent"
+        map:layout_constraintHorizontal_bias="0.648"
+        map:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/sigDir"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="38dp"
+        android:layout_marginTop="121dp"
+        android:text="LLEGUE!"
+        map:layout_constraintStart_toStartOf="parent"
+        map:layout_constraintTop_toBottomOf="@+id/map" />
+
+    <TextView
+        android:id="@+id/descPedido"
+        android:layout_width="188dp"
+        android:layout_height="38dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="34dp"
+        android:text="Descripcion"
+        map:layout_constraintStart_toEndOf="@+id/fotoCliente"
+        map:layout_constraintTop_toBottomOf="@+id/map" />
+
+    <TextView
+        android:id="@+id/direccionSig"
+        android:layout_width="152dp"
+        android:layout_height="22dp"
+        android:layout_marginEnd="116dp"
+        android:layout_marginBottom="24dp"
+        android:text="TextView"
+        map:layout_constraintBottom_toBottomOf="parent"
+        map:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="36dp"
+        android:text="Destino"
+        map:layout_constraintEnd_toStartOf="@+id/direccionSig"
+        map:layout_constraintTop_toBottomOf="@+id/sigDir" />
+
+    <TextView
+        android:id="@+id/textView7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="21dp"
+        android:layout_marginTop="84dp"
+        android:text="Cliente:"
+        map:layout_constraintStart_toEndOf="@+id/fotoCliente"
+        map:layout_constraintTop_toBottomOf="@+id/map" />
+
+    <TextView
+        android:id="@+id/textView8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="148dp"
+        android:text="Precio"
+        map:layout_constraintStart_toEndOf="@+id/sigDir"
+        map:layout_constraintTop_toBottomOf="@+id/map" />
+
+    <TextView
+        android:id="@+id/precioPedido"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="44dp"
+        android:layout_marginTop="148dp"
+        android:text="TextView"
+        map:layout_constraintStart_toEndOf="@+id/textView8"
+        map:layout_constraintTop_toBottomOf="@+id/map" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -11,4 +11,6 @@
     <color name="green">#00FF00</color>
     <color name="dark_green">#008000</color>
     <color name="lavender">#8692f7</color>
+    <color name="gray">#808080</color>
+    <color name="eggplant">#311432</color>
 </resources>

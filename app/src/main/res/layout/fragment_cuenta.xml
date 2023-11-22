@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/black"
     tools:context=".CuentaFragment">
 
     <!-- TODO: Update blank fragment layout -->
@@ -118,6 +119,7 @@
         android:text="3168745243"
         android:id="@+id/telefono"
         android:gravity="center"
+        android:backgroundTint="@color/gray"
         android:layout_marginTop="360dp"
         android:layout_marginLeft="-100dp"
         android:textSize="20sp"

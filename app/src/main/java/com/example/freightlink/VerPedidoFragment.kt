@@ -1,36 +1,44 @@
 package com.example.freightlink
 
-import android.content.pm.PackageManager
-import android.media.Image
-import com.bumptech.glide.Glide
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.os.Parcelable
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
-import androidx.core.app.ActivityCompat
-import androidx.fragment.app.findFragment
-import com.example.freightlink.MainActivity.Companion.ACCESS_FINE_LOCATION
+import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
-class ConfirmarPedidoFragment : Fragment() {
+// TODO: Rename parameter arguments, choose names that match
+// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+private const val ARG_PARAM1 = "param1"
+private const val ARG_PARAM2 = "param2"
+
+/**
+ * A simple [Fragment] subclass.
+ * Use the [VerPedidoFragment.newInstance] factory method to
+ * create an instance of this fragment.
+ */
+class VerPedidoFragment : Fragment() {
     private var pedido: Pedido? = null
     private lateinit var auth: FirebaseAuth
     private lateinit var database: FirebaseDatabase
     private lateinit var myRef: DatabaseReference
     private lateinit var myRef2: DatabaseReference
     var imageUrl = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            pedido = it.getParcelable(ARG_PEDIDO)
+            pedido = it.getParcelable(VerPedidoFragment.ARG_PEDIDO)
         }
     }
 
@@ -39,7 +47,7 @@ class ConfirmarPedidoFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_confirmar_pedido, container, false)
+        val view = inflater.inflate(R.layout.fragment_ver_pedido, container, false)
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance()
         val idCli ="${pedido!!.cliente ?: ""}"
@@ -52,9 +60,9 @@ class ConfirmarPedidoFragment : Fragment() {
         val recoger = view.findViewById<TextView>(R.id.recolectarPedido)
         val entregar = view.findViewById<TextView>(R.id.entregaPedido)
         val precio = view.findViewById<TextView>(R.id.precioPedido)
+        val estado = view.findViewById<TextView>(R.id.estadoPedido)
         val foto = view.findViewById<ImageView>(R.id.detailImage)
         val volver = view.findViewById<Button>(R.id.cancelar)
-        val confirmar = view.findViewById<Button>(R.id.confirmar)
 
         myRef.addValueEventListener(object: ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot){
@@ -74,38 +82,14 @@ class ConfirmarPedidoFragment : Fragment() {
         recoger.text = "${pedido!!.direccion_recoger ?: ""}"
         entregar.text = "${pedido!!.direccion_entregar ?: ""}"
         precio.text = "\$xxx,xxx,xxx"
+        estado.text = "${pedido!!.estado ?: ""}"
 
         volver.setOnClickListener {
-            val listaPedidos =ListaPedidosFragment()
+            val historialPedidos =HistorialFragment()
             val fragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
-            fragmentTransaction.replace(R.id.fragment_container, listaPedidos)
+            fragmentTransaction.replace(R.id.fragment_container, historialPedidos)
             fragmentTransaction.addToBackStack(null)
             fragmentTransaction.commit()
-        }
-
-        confirmar.setOnClickListener {
-            myRef2 = database.getReference("pedidos").child(idPedido)
-
-            myRef2.child("driver").setValue(userID.toString()) // Actualizar el campo "driver"
-            myRef2.child("estado").setValue("confirmado") // Actualizar el campo "estado"
-            // Puedes agregar más líneas para actualizar otros campos si es necesario
-
-            myRef2.addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    // Actualización completada, puedes realizar acciones adicionales aquí
-                    Toast.makeText(requireContext(), "Pedido confirmado", Toast.LENGTH_SHORT).show()
-                    val mapaFragment = MapaFragment.newInstance(pedido!!)
-                    val fragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
-                    fragmentTransaction.replace(R.id.fragment_container, mapaFragment)
-                    fragmentTransaction.addToBackStack(null)
-                    fragmentTransaction.commit()
-                }
-
-                override fun onCancelled(databaseError: DatabaseError) {
-                    // Manejar errores si es necesario
-                    Toast.makeText(requireContext(), "Error al confirmar pedido", Toast.LENGTH_SHORT).show()
-                }
-            })
         }
 
         return view
@@ -116,7 +100,7 @@ class ConfirmarPedidoFragment : Fragment() {
 
         @JvmStatic
         fun newInstance(pedido: Pedido) =
-            ConfirmarPedidoFragment().apply {
+            VerPedidoFragment().apply {
                 arguments = Bundle().apply {
                     putParcelable(ARG_PEDIDO, pedido)
                 }

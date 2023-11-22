@@ -29,6 +29,7 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+
     <style name="Theme.FreightLink.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.FreightLink.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />

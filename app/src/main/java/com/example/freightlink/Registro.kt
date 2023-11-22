@@ -1,5 +1,6 @@
 package com.example.freightlink
 
+import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -11,6 +12,7 @@ import android.text.TextUtils
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -27,6 +29,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -49,6 +52,8 @@ class Registro : AppCompatActivity(){
     }
     private val mydb = FirebaseDatabase.getInstance()
     private var tempImageUri: Uri? = null
+    var imageUrl: String? = null
+    var uri: Uri? = null
     private var tempImageFilePath = ""
     private val albumLauncher = registerForActivityResult(ActivityResultContracts.GetContent()){
         img.setImageURI(it)
@@ -318,31 +323,21 @@ class Registro : AppCompatActivity(){
         return valid
     }
 
+    @SuppressLint("SuspiciousIndentation")
     private fun uploadImageAndSaveUserData(
         correo: String, pass: String, nom: String,
         apellido: String, cedula: Long, telefono: Long,  photoUri: Uri?
     ) {
         val userId = auth.currentUser?.uid
         if (userId != null && photoUri != null) {
-            val photoRef = storage.child("fotos_perfil/$userId.jpg")
-            photoRef.putFile(photoUri)
-                .continueWithTask { task ->
-                    if (!task.isSuccessful) {
-                        task.exception?.let { throw it }
-                    }
-                    photoRef.downloadUrl
-                }
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        val downloadUrl = task.result
-                        saveUserData(correo, pass, nom, apellido, cedula, telefono, downloadUrl)
-                    } else {
-                        Toast.makeText(
-                            baseContext, "Error al guardar la foto de perfil.",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
+            val storageRef = FirebaseStorage.getInstance().reference.child("Imagenes")
+            storageRef.putFile(photoUri).addOnSuccessListener { taskSnapshot ->
+                val uriTask = taskSnapshot.storage.downloadUrl
+                while(!uriTask.isComplete);
+                    val uriImage = uriTask.result
+                imageUrl = uriImage.toString()
+                saveUserData(correo, pass, nom, apellido, cedula, telefono, imageUrl)
+            }
         } else {
             saveUserData(correo, pass, nom, apellido, cedula, telefono, null)
         }
@@ -350,7 +345,7 @@ class Registro : AppCompatActivity(){
 
     private fun saveUserData(
         correo: String, pass: String, nom: String,
-        apellido: String, cedula: Long, telefono: Long, photoUrl: Uri?
+        apellido: String, cedula: Long, telefono: Long, photoUrl: String?
     ) {
         val userId = auth.currentUser!!.uid
         database = Firebase.database.reference
@@ -406,6 +401,11 @@ class Registro : AppCompatActivity(){
 
         cambiarfoto.setOnClickListener {
             askImageMethod()
+        }
+
+        volver.setOnClickListener {
+            val intentBack = Intent(this, MainActivity::class.java)
+            startActivity(intentBack)
         }
         reg.setOnClickListener {
             val nomReg = nombre.text.toString()

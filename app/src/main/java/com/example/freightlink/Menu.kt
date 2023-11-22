@@ -24,6 +24,8 @@ import com.example.freightlink.databinding.ActivityMenuBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 
 class Menu : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -33,7 +35,8 @@ class Menu : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
     private lateinit var navigationView: NavigationView
     private lateinit var toolbar: Toolbar
     private lateinit var toggle: ActionBarDrawerToggle
-
+    private lateinit var auth: FirebaseAuth
+    private lateinit var database: FirebaseDatabase
     private lateinit var binding: ActivityMenuBinding
 
 
@@ -42,7 +45,8 @@ class Menu : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         super.onCreate(savedInstanceState)
         binding =ActivityMenuBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        auth = FirebaseAuth.getInstance()
+        database =FirebaseDatabase.getInstance()
         drawerLayout = findViewById<DrawerLayout>(R.id.drawer_layout)
         navigationView = findViewById<NavigationView>(R.id.nav_view)
         toolbar = findViewById<Toolbar>(R.id.toolbar)
@@ -85,6 +89,7 @@ class Menu : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
             R.id.nav_cuenta -> supportFragmentManager.beginTransaction().replace(R.id.fragment_container, CuentaFragment()).commit()
             R.id.nav_historial -> supportFragmentManager.beginTransaction().replace(R.id.fragment_container, HistorialFragment()).commit()
             R.id.nav_logout -> {
+                auth.signOut()
                 val intentMain = Intent(this, MainActivity::class.java)
                 startActivity(intentMain)
             }

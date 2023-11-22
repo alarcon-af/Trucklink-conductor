@@ -33,6 +33,7 @@ class ListaPedidosFragment : Fragment(), PedidoAdapter.PedidoAdapterCallback {
     private lateinit var auth: FirebaseAuth
     private lateinit var database: FirebaseDatabase
     private lateinit var myRef: DatabaseReference
+    private lateinit var myRef2: DatabaseReference
     var eventListener: ValueEventListener? = null
 
     private val binding get() = binding1!!
@@ -54,6 +55,7 @@ class ListaPedidosFragment : Fragment(), PedidoAdapter.PedidoAdapterCallback {
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance()
         myRef = database.getReference("pedidos")
+        myRef2 = database.getReference("conductores")
         val recyclerView = view.findViewById<RecyclerView>(R.id.recycler_view_pedidos)
         val gridLayoutManager = GridLayoutManager(requireContext(), 1)
         recyclerView.layoutManager = gridLayoutManager
@@ -68,7 +70,7 @@ class ListaPedidosFragment : Fragment(), PedidoAdapter.PedidoAdapterCallback {
                 pedidos.clear()
                 for(itemSnapshot in snapshot.children){
                     val pedido = itemSnapshot.getValue(Pedido::class.java)
-                    if(pedido!=null){
+                    if(pedido!=null && pedido.estado == "activo"){
                         pedidos.add(pedido)
                     }
                 }

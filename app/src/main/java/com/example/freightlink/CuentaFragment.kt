@@ -6,9 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.findFragment
+import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
@@ -44,11 +46,12 @@ class CuentaFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_cuenta, container, false)
         auth = FirebaseAuth.getInstance()
-        myRef = database.getReference("usuarios/").child(auth.getUid().toString())
+        myRef = database.getReference("conductores/").child(auth.getUid().toString())
         var nombre = view.findViewById<TextView>(R.id.nombre)
         var cedula = view.findViewById<TextView>(R.id.cedula)
         var correo = view.findViewById<TextView>(R.id.correo)
         var telefono = view.findViewById<TextView>(R.id.telefono)
+        var foto = view.findViewById<ImageView>(R.id.fotoCuenta)
         myRef.addValueEventListener(object: ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot){
                 val user = dataSnapshot.getValue(Driver::class.java)
@@ -57,6 +60,7 @@ class CuentaFragment : Fragment() {
                     correo.text = user.correo
                     cedula.text = user.cedula.toString()
                     telefono.text = user.telefono.toString()
+                    Glide.with(requireActivity()).load(user.foto).into(foto)
                 }
             }
             override fun onCancelled(databaseError: DatabaseError) {

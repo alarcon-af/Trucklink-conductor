@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/black"
     tools:context=".MainActivity">
 
 
@@ -13,6 +14,9 @@
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:hint="Correo"
+        android:textColorHint="@color/dark_green"
+        android:backgroundTint="@color/dark_green"
+        android:textColor="@color/white"
         android:inputType="textEmailAddress"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.495"
@@ -26,7 +30,10 @@
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:hint="Contrasena"
+        android:textColorHint="@color/dark_green"
+        android:backgroundTint="@color/dark_green"
         android:inputType="textPassword"
+        android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"

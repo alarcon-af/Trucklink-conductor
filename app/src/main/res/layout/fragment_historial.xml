@@ -1,17 +1,16 @@
-<?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/black"
     tools:context=".HistorialFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view_pedidos"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Historial"
-        android:gravity="center"
-        android:textSize="30sp"
-        android:textColor="@color/dark_green" />
+        android:scrollbars="vertical"
+        android:layout_marginTop="10dp"/>
 
-</FrameLayout>
+</LinearLayout>

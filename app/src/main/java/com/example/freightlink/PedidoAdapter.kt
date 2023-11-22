@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import android.content.Context
 
-class PedidoAdapter(private val context:Context, private val pedidos: List<Pedido>, private val callback: PedidoAdapterCallback) : RecyclerView.Adapter<PedidoAdapter.PedidoViewHolder>() {
+class PedidoAdapter(private val context:Context, private val pedidos: List<Pedido>,  private val callback: PedidoAdapterCallback) : RecyclerView.Adapter<PedidoAdapter.PedidoViewHolder>() {
 
     interface PedidoAdapterCallback {
         fun onPedidoClicked(pedido: Pedido)
@@ -24,9 +24,9 @@ class PedidoAdapter(private val context:Context, private val pedidos: List<Pedid
 
     override fun onBindViewHolder(holder: PedidoViewHolder, position: Int) {
         val pedido = pedidos[position]
+        Glide.with(context).load(R.drawable.white).into(holder.recImage)
         holder.recTitle.text = pedidos[position].cliente
         holder.recDesc.text = pedidos[position].carga
-        //holder.bind(pedido, onPedidoClicked)
         holder.recCard.setOnClickListener{
             var pedidoVer =pedidos[holder.absoluteAdapterPosition]
             callback.onPedidoClicked(pedidoVer)
