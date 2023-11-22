@@ -21,6 +21,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getSystemService
 import com.example.freightlink.MainActivity.Companion.ACCESS_FINE_LOCATION
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -63,10 +64,87 @@ class MapaFragment : Fragment() {
     private lateinit var mLocationCallback: LocationCallback
     private lateinit var locationOrigen: LatLng
     private lateinit var locationDestino: LatLng
+    private val LOCATION_PERMISSION_REQUEST = 1
 
     val noroesteMapa = LatLng(2.676054, -75.666414)
     val suresteMapa = LatLng(6.367807, -73.438245)
     val bounds = LatLngBounds(noroesteMapa, suresteMapa)
+
+    private fun getLocationAccess(){
+        if(ContextCompat.checkSelfPermission(requireActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+            mMap!!.isMyLocationEnabled = true
+            getLocationUpdates()
+            startLocationUpdates()
+        }else{
+            ActivityCompat.requestPermissions(requireActivity(), arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_REQUEST)
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            LOCATION_PERMISSION_REQUEST -> {
+                if((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)){
+                    enableMyLocation()
+                    Toast.makeText(requireContext(), "permission granted :)", Toast.LENGTH_LONG).show()
+
+                }else{
+                    Toast.makeText(requireContext(), "permission denied", Toast.LENGTH_LONG).show()
+                }
+                return
+            }
+        }
+
+    }
+
+    private fun enableMyLocation() {
+        if (ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            mMap?.isMyLocationEnabled = true
+        }
+    }
+
+    private fun getLocationUpdates(){
+        mLocationRequest = LocationRequest()
+        mLocationRequest.interval = 30000
+        mLocationRequest.fastestInterval = 20000
+        mLocationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+
+        val idPedido = "${pedido!!.pedidoId ?: ""}"
+        mLocationCallback = object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult){
+                if (locationResult.locations.isNotEmpty()){
+                    val location = locationResult.lastLocation
+
+                    myRef = database.getReference("pedidos/").child(idPedido)
+                    myRef.child("latitud").setValue(location!!.latitude)
+                        .addOnSuccessListener {
+                            Toast.makeText(requireActivity(), "latitud inscrita", Toast.LENGTH_LONG).show()
+                        }
+                        .addOnFailureListener{
+                            Toast.makeText(requireActivity(), "latitud no inscrita", Toast.LENGTH_LONG).show()
+                        }
+                    myRef.child("longitud").setValue(location!!.longitude)
+                        .addOnSuccessListener {
+                            Toast.makeText(requireActivity(), "longitud inscrita", Toast.LENGTH_LONG).show()
+                        }
+                        .addOnFailureListener{
+                            Toast.makeText(requireActivity(), "longitud no inscrita", Toast.LENGTH_LONG).show()
+                        }
+
+                    if(location != null){
+                        val latLng = LatLng(location.latitude, location.longitude)
+                        val markerOptions = MarkerOptions().position(latLng)
+                        mMap!!.addMarker(markerOptions)
+                        mMap!!.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
+                    }
+                }
+            }
+        }
+    }
 
     private val callback = OnMapReadyCallback { googleMap ->
         mMap = googleMap
@@ -78,8 +156,8 @@ class MapaFragment : Fragment() {
             mFusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
             sensorManager = requireContext().getSystemService(Context.SENSOR_SERVICE) as SensorManager
             lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT)
-            val noroesteMapa = LatLng(6.367807, -75.666414)
-            val suresteMapa = LatLng(2.676054, -73.438245)
+            val noroesteMapa = LatLng(4.4845, -74.1479)
+            val suresteMapa =  LatLng(4.7634, -74.0039)
             val pedido = arguments?.getParcelable<Pedido>("pedido")
             centrarMapa(noroesteMapa, suresteMapa)
             //val geocoder = Geocoder(requireContext())
@@ -129,8 +207,7 @@ class MapaFragment : Fragment() {
                             }
                         }
                     }
-                    //LocationServices.getFusedLocationProviderClient(requireActivity()).requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper())
-                    startLocationUpdates()
+                    getLocationAccess()
                     lightSensorListener = object : SensorEventListener {
                         override fun onSensorChanged(event: SensorEvent) {
                             val light = event.values[0]
@@ -201,36 +278,6 @@ class MapaFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        when (requestCode) {
-            MainActivity.ACCESS_FINE_LOCATION -> {
-                if((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)){
-                    //Aqui va el proceso pa sacar los datos
-                    Toast.makeText(requireContext(), "permission granted :)", Toast.LENGTH_LONG).show()
-
-                }else{
-                    Toast.makeText(requireContext(), "permission denied", Toast.LENGTH_LONG).show()
-                }
-                return
-            }
-            /*ACCESS_COARSE_LOCATION -> {
-                if((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)){
-                    //Aqui va el proceso pa sacar los datos
-                    Toast.makeText(this, "permission granted :)", Toast.LENGTH_LONG).show()
-                }else{
-                    Toast.makeText(this, "permission denied", Toast.LENGTH_LONG).show()
-                }
-                return
-            }*/
-        }
-
     }
 
     private fun checkLocationPermission() {
