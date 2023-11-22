@@ -1,16 +1,11 @@
 package com.example.freightlink
 
 import android.annotation.SuppressLint
-import android.app.Dialog
 import androidx.fragment.app.Fragment
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.*
-import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
@@ -25,7 +20,11 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 class Menu : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -38,6 +37,10 @@ class Menu : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
     private lateinit var auth: FirebaseAuth
     private lateinit var database: FirebaseDatabase
     private lateinit var binding: ActivityMenuBinding
+    private var pedido: Pedido? = null
+    private lateinit var myRef: DatabaseReference
+    private lateinit var myRef2: DatabaseReference
+    var eventListener: ValueEventListener? = null
 
 
     @SuppressLint("SuspiciousIndentation")
@@ -46,7 +49,6 @@ class Menu : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
         binding =ActivityMenuBinding.inflate(layoutInflater)
         setContentView(binding.root)
         auth = FirebaseAuth.getInstance()
-        database =FirebaseDatabase.getInstance()
         drawerLayout = findViewById<DrawerLayout>(R.id.drawer_layout)
         navigationView = findViewById<NavigationView>(R.id.nav_view)
         toolbar = findViewById<Toolbar>(R.id.toolbar)
@@ -108,7 +110,29 @@ class Menu : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
             ACCESS_FINE_LOCATION -> {
                 if((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)){
                     //Aqui va el proceso pa sacar los datos
-                    replaceFragment(MapaFragment())
+                    database =FirebaseDatabase.getInstance()
+                    myRef = database.getReference("pedidos")
+                    val currentUser = auth.currentUser
+                    val currentUserId = currentUser?.uid
+                    eventListener = myRef.addValueEventListener(object : ValueEventListener {
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                            for(itemSnapshot in snapshot.children){
+                                val pedido = itemSnapshot.getValue(Pedido::class.java)
+                                if(pedido!=null && pedido.driver == currentUserId){
+                                    val fragmentTransaction = supportFragmentManager.beginTransaction()
+                                    val mapaFragment = MapaFragment.newInstance(pedido)
+                                    fragmentTransaction.replace(R.id.fragment_container, mapaFragment)
+                                    fragmentTransaction.commit()
+                                }
+                            }
+                        }
+
+                        override fun onCancelled(error: DatabaseError) {
+                            TODO("Not yet implemented")
+                        }
+                    } )
+
+
                     Toast.makeText(this, "permission granted :)", Toast.LENGTH_LONG).show()
 
                 }else{
@@ -159,8 +183,35 @@ class Menu : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListene
                 // No explanation needed, we can request the permission.
                 requestLocationPermission()
             }
+        }else{
+            database =FirebaseDatabase.getInstance()
+            myRef = database.getReference("pedidos")
+            val currentUser = auth.currentUser
+            val currentUserId = currentUser?.uid
+            eventListener = myRef.addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    for(itemSnapshot in snapshot.children){
+                        val pedido = itemSnapshot.getValue(Pedido::class.java)
+                        if(pedido!=null && pedido.driver == currentUserId){
+                            val fragmentTransaction = supportFragmentManager.beginTransaction()
+                            val mapaFragment = MapaFragment.newInstance(pedido)
+                            fragmentTransaction.replace(R.id.fragment_container, mapaFragment)
+                            fragmentTransaction.commit()
+                        }
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    TODO("Not yet implemented")
+                }
+            } )
+
+
+            Toast.makeText(this, "permission granted :)", Toast.LENGTH_LONG).show()
+
         }
     }
+
 
     private fun requestLocationPermission() {
         ActivityCompat.requestPermissions(

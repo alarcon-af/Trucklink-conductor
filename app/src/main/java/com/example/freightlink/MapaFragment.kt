@@ -70,82 +70,6 @@ class MapaFragment : Fragment() {
     val suresteMapa = LatLng(6.367807, -73.438245)
     val bounds = LatLngBounds(noroesteMapa, suresteMapa)
 
-    private fun getLocationAccess(){
-        if(ContextCompat.checkSelfPermission(requireActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-            mMap!!.isMyLocationEnabled = true
-            getLocationUpdates()
-            startLocationUpdates()
-        }else{
-            ActivityCompat.requestPermissions(requireActivity(), arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_REQUEST)
-        }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        when (requestCode) {
-            LOCATION_PERMISSION_REQUEST -> {
-                if((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)){
-                    enableMyLocation()
-                    Toast.makeText(requireContext(), "permission granted :)", Toast.LENGTH_LONG).show()
-
-                }else{
-                    Toast.makeText(requireContext(), "permission denied", Toast.LENGTH_LONG).show()
-                }
-                return
-            }
-        }
-
-    }
-
-    private fun enableMyLocation() {
-        if (ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            mMap?.isMyLocationEnabled = true
-        }
-    }
-
-    private fun getLocationUpdates(){
-        mLocationRequest = LocationRequest()
-        mLocationRequest.interval = 30000
-        mLocationRequest.fastestInterval = 20000
-        mLocationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-
-        val idPedido = "${pedido!!.pedidoId ?: ""}"
-        mLocationCallback = object : LocationCallback() {
-            override fun onLocationResult(locationResult: LocationResult){
-                if (locationResult.locations.isNotEmpty()){
-                    val location = locationResult.lastLocation
-
-                    myRef = database.getReference("pedidos/").child(idPedido)
-                    myRef.child("latitud").setValue(location!!.latitude)
-                        .addOnSuccessListener {
-                            Toast.makeText(requireActivity(), "latitud inscrita", Toast.LENGTH_LONG).show()
-                        }
-                        .addOnFailureListener{
-                            Toast.makeText(requireActivity(), "latitud no inscrita", Toast.LENGTH_LONG).show()
-                        }
-                    myRef.child("longitud").setValue(location!!.longitude)
-                        .addOnSuccessListener {
-                            Toast.makeText(requireActivity(), "longitud inscrita", Toast.LENGTH_LONG).show()
-                        }
-                        .addOnFailureListener{
-                            Toast.makeText(requireActivity(), "longitud no inscrita", Toast.LENGTH_LONG).show()
-                        }
-
-                    if(location != null){
-                        val latLng = LatLng(location.latitude, location.longitude)
-                        val markerOptions = MarkerOptions().position(latLng)
-                        mMap!!.addMarker(markerOptions)
-                        mMap!!.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
-                    }
-                }
-            }
-        }
-    }
-
     private val callback = OnMapReadyCallback { googleMap ->
         mMap = googleMap
 
@@ -153,31 +77,21 @@ class MapaFragment : Fragment() {
             mMap!!.uiSettings.isScrollGesturesEnabledDuringRotateOrZoom = true
             mMap!!.uiSettings?.isZoomControlsEnabled = true
             mMap!!.uiSettings?.isZoomGesturesEnabled = true
-            mFusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-            sensorManager = requireContext().getSystemService(Context.SENSOR_SERVICE) as SensorManager
-            lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT)
-            val noroesteMapa = LatLng(4.4845, -74.1479)
-            val suresteMapa =  LatLng(4.7634, -74.0039)
             val pedido = arguments?.getParcelable<Pedido>("pedido")
             centrarMapa(noroesteMapa, suresteMapa)
             //val geocoder = Geocoder(requireContext())
-            mLocationRequest = createLocationRequest()
             if (pedido != null) {
                 val origen = pedido.direccion_recoger
                 val destino = pedido.direccion_entregar
 
                 if (origen?.isNotEmpty() == true) {
-                    locationOrigen = searchAddress(origen)!!
-                    mMap?.addMarker(MarkerOptions().position(locationOrigen!!).title("Dirección donde recoger carga").icon(
-                        BitmapDescriptorFactory.fromResource(R.drawable.start)))
+                    searchAddress1(origen)
                 } else {
                     Toast.makeText(requireContext(), "Dirección de recogida no encontrada", Toast.LENGTH_SHORT).show()
                 }
 
                 if (destino?.isNotEmpty() == true) {
-                    locationDestino = searchAddress(destino)!!
-                    mMap?.addMarker(MarkerOptions().position(locationDestino!!).title("Dirección de entrega").icon(
-                        BitmapDescriptorFactory.fromResource(R.drawable.end)))
+                    searchAddress(destino)
                 } else {
                     Toast.makeText(requireContext(), "Dirección de entrega no encontrada", Toast.LENGTH_SHORT).show()
                 }
@@ -185,54 +99,7 @@ class MapaFragment : Fragment() {
                 if (locationOrigen!=null && locationDestino!=null){
                     centrarMapa(locationOrigen, locationDestino)
                 }
-                if (ActivityCompat.checkSelfPermission(
-                        requireActivity(),
-                        android.Manifest.permission.ACCESS_FINE_LOCATION
-                    ) == PackageManager.PERMISSION_GRANTED
-                ){
-                    mLocationCallback = object : LocationCallback() {
-                        override fun onLocationResult(locationResult: LocationResult) {
-                            super.onLocationResult(locationResult)
-                            val location = locationResult.lastLocation
-                            Log.i("LOCATION", "Location update in the callback: $location")
-                            if (location != null) {
-                                val newLocation = LatLng(location.latitude, location.longitude)
-                                if(lastRecordedLocation==null || calculateDistanceInMeters(
-                                        lastRecordedLocation!!, newLocation) >= distanceThreshold){
-                                    lastRecordedLocation = newLocation
-                                    updateLocationOnMap(location.latitude, location.longitude)
-                                    var zoomI = LatLng(location.latitude, location.longitude)
-                                    mMap!!.animateCamera(CameraUpdateFactory.newLatLngZoom(zoomI, currentZoomLevel))
-                                }
-                            }
-                        }
-                    }
-                    getLocationAccess()
-                    lightSensorListener = object : SensorEventListener {
-                        override fun onSensorChanged(event: SensorEvent) {
-                            val light = event.values[0]
-                            if (mMap != null) {
-                                if (light < 10) {
-                                    mMap!!.setMapStyle(MapStyleOptions.loadRawResourceStyle(requireActivity(), R.raw.style_dark))
-                                } else {
-                                    mMap!!.setMapStyle(MapStyleOptions.loadRawResourceStyle(requireActivity(), R.raw.style_json))
-                                }
-                            }
-                        }
-
-                        override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {
-
-                        }
-                    }
-
-                }else{
-                    checkLocationPermission()
-                }
-
             }
-
-
-
         }
     }
 
@@ -242,16 +109,14 @@ class MapaFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_mapa, container, false)
-        val sensorManager = requireContext().getSystemService(Context.SENSOR_SERVICE) as SensorManager
-        lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT)
         var estado = view.findViewById<TextView>(R.id.descPedido)
         var nombre = view.findViewById<TextView>(R.id.nombreCliente)
         var precio = view.findViewById<TextView>(R.id.precioPedido)
         var carga = view.findViewById<TextView>(R.id.cargaPedido)
         var destino = view.findViewById<TextView>(R.id.direccionSig)
         val botonSig = view.findViewById<Button>(R.id.sigDir)
-        val idCli ="${pedido!!.cliente ?: ""}"
-        val idPedido = "${pedido!!.pedidoId ?: ""}"
+        val idCli = pedido!!.cliente ?: ""
+        val idPedido = pedido!!.pedidoId ?: ""
         myRef = database.getReference("usuarios/").child(idCli)
         myRef.addValueEventListener(object: ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot){
@@ -280,49 +145,6 @@ class MapaFragment : Fragment() {
         mapFragment?.getMapAsync(callback)
     }
 
-    private fun checkLocationPermission() {
-        if (ActivityCompat.checkSelfPermission(
-                requireActivity(),
-                android.Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(
-                    requireActivity(),
-                    android.Manifest.permission.ACCESS_FINE_LOCATION
-                ) /*|| ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION)
-            */) {
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-                AlertDialog.Builder(requireContext())
-                    .setTitle("Location Permission Needed")
-                    .setMessage("This app needs the Location permission, please accept to use location functionality")
-                    .setPositiveButton(
-                        "OK"
-                    ) { _, _ ->
-                        //Prompt the user once explanation has been shown
-                        requestLocationPermission()
-                    }
-                    .create()
-                    .show()
-            } else {
-                // No explanation needed, we can request the permission.
-                requestLocationPermission()
-            }
-        }
-    }
-
-    private fun requestLocationPermission() {
-        ActivityCompat.requestPermissions(
-            requireActivity(),
-            arrayOf(
-                android.Manifest.permission.ACCESS_FINE_LOCATION,
-            ),
-            MainActivity.ACCESS_FINE_LOCATION
-        )
-    }
-
     private fun centrarMapa(noroesteMapa: LatLng, suresteMapa: LatLng) {
         val centroMapa= LatLng(
             (noroesteMapa.latitude + suresteMapa.latitude) / 2,
@@ -331,37 +153,42 @@ class MapaFragment : Fragment() {
         mMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(centroMapa, 10f))
     }
 
-    private fun searchAddress(address: String): LatLng? {
+    private fun searchAddress1(address: String) {
         val geocoder = Geocoder(requireActivity())
         val addresses = geocoder.getFromLocationName(address, 1)
 
         if (addresses?.isNotEmpty() == true) {
             val location = LatLng(addresses[0].latitude, addresses[0].longitude)
-            return location
+
+            if (bounds.contains(location)) {
+                mMap?.addMarker(MarkerOptions().position(locationOrigen!!).title("Dirección donde recoger carga").icon(
+                    BitmapDescriptorFactory.fromResource(R.drawable.start)))
+            } else {
+                Toast.makeText(requireActivity(), "Dirección fuera de Bogotá", Toast.LENGTH_SHORT).show()
+            }
         } else {
             Toast.makeText(requireActivity(), "Dirección no encontrada", Toast.LENGTH_SHORT).show()
-            return null
         }
     }
 
-    private fun createLocationRequest(): LocationRequest {
-        val locationRequest = LocationRequest.create().apply {
-            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-            interval = 10000L
-            fastestInterval = 5000L
-        }
+    private fun searchAddress(address: String) {
+        val geocoder = Geocoder(requireActivity())
+        val addresses = geocoder.getFromLocationName(address, 1)
 
-        return locationRequest
+        if (addresses?.isNotEmpty() == true) {
+            val location = LatLng(addresses[0].latitude, addresses[0].longitude)
+
+            if (bounds.contains(location)) {
+                mMap?.addMarker(MarkerOptions().position(locationDestino!!).title("Dirección de entrega").icon(
+                    BitmapDescriptorFactory.fromResource(R.drawable.end)))
+            } else {
+                Toast.makeText(requireActivity(), "Dirección fuera de Bogotá", Toast.LENGTH_SHORT).show()
+            }
+        } else {
+            Toast.makeText(requireActivity(), "Dirección no encontrada", Toast.LENGTH_SHORT).show()
+        }
     }
 
-    private fun startLocationUpdates() {
-        if (ActivityCompat.checkSelfPermission(
-                requireActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.getMainLooper())
-        }
-    }
 
     private fun updateLocationOnMap(latitude: Double, longitude: Double) {
         val currentLocation = LatLng(latitude, longitude)

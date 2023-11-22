@@ -1,22 +1,15 @@
 package com.example.freightlink
 
-import android.content.pm.PackageManager
-import android.media.Image
 import com.bumptech.glide.Glide
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.os.Parcelable
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
-import androidx.core.app.ActivityCompat
-import androidx.fragment.app.findFragment
-import com.example.freightlink.MainActivity.Companion.ACCESS_FINE_LOCATION
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 

@@ -95,7 +95,14 @@
         android:textColor="@color/black"
         android:textSize="15dp" />
 
-
+    <ImageView
+        android:id="@+id/recta1"
+        android:layout_width="302dp"
+        android:layout_height="160dp"
+        android:layout_marginTop="80dp"
+        android:layout_gravity="top|center"
+        android:scaleType="fitXY"
+        android:src="@drawable/recta_menu" />
 
     <ImageView
         android:id="@+id/recta2"
@@ -110,7 +117,7 @@
         android:id="@+id/logoCamion1"
         android:layout_width="88dp"
         android:layout_height="84dp"
-        android:layout_marginTop="-220dp"
+        android:layout_marginTop="-120dp"
         android:layout_marginLeft="-70dp"
         android:layout_gravity="center"
         android:src="@drawable/truck" />
@@ -119,9 +126,9 @@
         android:id="@+id/logoCamion2"
         android:layout_width="88dp"
         android:layout_height="84dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="-80dp"
         android:layout_gravity="center"
+        android:layout_marginLeft="-80dp"
+        android:layout_marginTop="100dp"
         android:src="@drawable/truck" />
 
     <Button
